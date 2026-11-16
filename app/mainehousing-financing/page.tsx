@@ -1,27 +1,28 @@
 import type { Metadata } from "next";
-import { PageHero } from "@/components/page-hero";
-import { PreApprovalForm } from "@/components/pre-approval-form";
-import { PreferredLender } from "@/components/preferred-lender";
-import { Reveal } from "@/components/reveal";
-import {
-  Badge,
-  ButtonLink,
-  Container,
-  Icon,
-  Section,
-  SectionHeading,
-} from "@/components/ui";
+import Image from "next/image";
+import Link from "next/link";
+import { MaineHousingForm } from "@/components/mainehousing-form";
+import { Icon } from "@/components/ui";
 import { company } from "@/lib/company";
 import { site } from "@/lib/site";
+import logo from "@/public/logo.png";
 
 /**
  * `/mainehousing-financing` — a campaign landing page for MaineHousing's
  * homebuyer programs, for ads and direct links only.
  *
  * UNLISTED ON PURPOSE. It is not in `lib/navigation.ts`, not in
- * `lib/page-config.ts`, not in `app/sitemap.ts`, and it asks search engines
- * not to index it. The only way in is a link somebody was given. Keep it that
- * way: `/financing` is the page the site itself points at.
+ * `app/sitemap.ts`, and it asks search engines not to index it. The only way
+ * in is a link somebody was given. Keep it that way: `/financing` is the page
+ * the site itself points at.
+ *
+ * BARE AND OFF-THEME ON PURPOSE. It is listed in `bareRoutes` in
+ * `lib/page-config.ts`, so the site's header, footer, call bar, chat and
+ * floating buttons are not drawn — one offer, one form, nowhere to wander.
+ * And it wears its own palette (spruce, cream and a signal yellow) in fixed
+ * colours rather than the skin's tokens, so it looks the same whichever skin
+ * is active and whether or not the visitor has the dark theme on. Change the
+ * colours here, not in `lib/skin.ts`.
  *
  * Every figure below is MaineHousing's, read from mainehousing.org in
  * November 2026, and each card links to the page it came from. MaineHousing
@@ -42,52 +43,36 @@ export const metadata: Metadata = {
   alternates: { canonical: "/mainehousing-financing" },
 };
 
+/* The page's own palette. Tailwind needs literal class names, so these are
+   written out in the markup; this is the key to them.
+     spruce  #0e3b2c   deep ground, headings
+     pine    #165440   raised panels on the spruce
+     cream   #f5f0e4   light ground
+     sand    #d9d2c1   rules and borders on cream
+     signal  #f6c445   the one accent — CTAs and the big figures
+     ink     #10241c   body text on cream
+     moss    #4b5a52   secondary text on cream                        */
+
+const tel = (phone: string) => `tel:+1${phone.replace(/\D/g, "")}`;
+
 type Program = {
   name: string;
   figure: string;
   figureNote: string;
-  tone: "ember" | "moss" | "neutral";
-  badge: string;
+  who: string;
   body: string;
   rules: string[];
   href: string;
+  star?: boolean;
 };
 
 const PROGRAMS: Program[] = [
   {
-    name: "First Home Loan",
-    figure: "30-yr fixed",
-    figureNote: "below-market or competitive rate",
-    tone: "moss",
-    badge: "The base loan",
-    body: "MaineHousing's own mortgage, made through participating Maine lenders. It is the loan every other program on this page sits on top of, and it finances manufactured homes on owned or leased land.",
-    rules: [
-      "Have not owned your home in the last 3 years — so a past owner can still qualify",
-      "Minimum credit score of 640",
-      "Household income and purchase-price limits apply; most Maine households and homes fall inside them",
-    ],
-    href: `${MH}/programs-services/homebuyer/homebuyerdetail/first-home-loan-program`,
-  },
-  {
-    name: "Advantage",
-    figure: "$5,000",
-    figureNote: "toward down payment and closing costs",
-    tone: "ember",
-    badge: "With a First Home Loan",
-    body: "Cash toward what you need at closing, added to a First Home Loan. This is the help most buyers on a MaineHousing loan will use.",
-    rules: [
-      "Take a hoMEworks-approved homebuyer education class before closing",
-      "Put in at least 1% of the loan yourself — the class fee counts toward it",
-    ],
-    href: `${MH}/programs-services/homebuyer/homebuyerdetail/first-home-loan-program`,
-  },
-  {
     name: "First Generation",
     figure: "$10,000",
-    figureNote: "toward down payment and closing costs",
-    tone: "ember",
-    badge: "Plus 1.00% off the rate",
-    body: "For a buyer whose parents never owned their home. Twice the Advantage assistance, and a zero-point option at 1.00% below the First Home Loan rate.",
+    figureNote: "toward down payment & closing, plus 1.00% off the rate",
+    who: "Your parents never owned their home",
+    body: "Twice the Advantage assistance, and a zero-point option at 1.00% below the First Home Loan rate.",
     rules: [
       "At least one borrower never lived in a home owned by their parents or legal guardians, or was in foster care",
       "Never owned a home yourself",
@@ -95,16 +80,41 @@ const PROGRAMS: Program[] = [
       "At least 1% of the loan from you",
     ],
     href: `${MH}/programs-services/homebuyer/homebuyerdetail/first-generation-program`,
+    star: true,
+  },
+  {
+    name: "Advantage",
+    figure: "$5,000",
+    figureNote: "toward down payment & closing costs",
+    who: "Most buyers on a MaineHousing loan",
+    body: "Cash toward what you need at closing, added to a First Home Loan. This is the help most buyers will use.",
+    rules: [
+      "Take a hoMEworks-approved homebuyer education class before closing",
+      "Put in at least 1% of the loan yourself — the class fee counts toward it",
+    ],
+    href: `${MH}/programs-services/homebuyer/homebuyerdetail/first-home-loan-program`,
   },
   {
     name: "SaluteME",
-    figure: "0.50% off",
-    figureNote: "the First Home Loan 30-year rate",
-    tone: "moss",
-    badge: "Veterans",
-    body: "A rate discount for veterans and service members on top of the First Home Loan, and for a veteran who has owned before, the first-time buyer rule is waived.",
+    figure: "0.50%",
+    figureNote: "off the First Home Loan 30-year rate",
+    who: "Veterans & service members",
+    body: "A rate discount on top of the First Home Loan — and for a veteran who has owned before, the first-time buyer rule is waived.",
     rules: ["Eligible military service", "The First Home Loan's credit and income rules otherwise apply"],
     href: `${MH}/programs-services/homebuyer/homebuyerdetail/saluteme-salute-home-again`,
+  },
+  {
+    name: "First Home Loan",
+    figure: "30-yr",
+    figureNote: "fixed, below-market or competitive rate",
+    who: "The loan everything above sits on",
+    body: "MaineHousing's own mortgage, made through participating Maine lenders. It finances manufactured homes on owned or leased land.",
+    rules: [
+      "Have not owned your home in the last 3 years — so a past owner can still qualify",
+      "Minimum credit score of 640",
+      "Household income and purchase-price limits apply; most Maine households and homes fall inside them",
+    ],
+    href: `${MH}/programs-services/homebuyer/homebuyerdetail/first-home-loan-program`,
   },
 ];
 
@@ -112,252 +122,434 @@ const PROGRAMS: Program[] = [
 const MANUFACTURED = [
   {
     icon: Icon.House,
-    title: "Owned land or leased land",
-    body: "MaineHousing finances single- and double-section homes on land you own and on a leased lot — the leased-land case is one most loan programs will not touch.",
+    title: "Owned land or a leased lot",
+    body: "Single- and double-section homes on land you own and on a leased lot — the leased-land case most loan programs won't touch.",
   },
   {
     icon: Icon.Dollar,
-    title: "$250,000 on owned land, $200,000 leased",
-    body: "The statewide purchase-price limit for a manufactured home, set separately from site-built houses. Ask us which homes and which land deals come in under it.",
+    title: "$250K owned land · $200K leased",
+    body: "The statewide purchase-price limit for a manufactured home. Ask us which homes and land deals come in under it.",
   },
   {
     icon: Icon.Calendar,
-    title: "Built within the last 20 years",
-    body: "A new home from us is inside that rule by definition. The loan term is set by the home's age, and MaineHousing notes rates on these loans run a little higher than on a house.",
+    title: "Built within 20 years",
+    body: "A new home from us is inside that rule by definition. Rates on these loans run a little higher than on a site-built house.",
   },
   {
     icon: Icon.Shield,
     title: "Maine HOPE, if work stops",
-    body: "A MaineHousing borrower in good standing who loses their job may have up to four mortgage payments advanced, held as a no-interest lien with no monthly payments.",
+    body: "A borrower in good standing who loses their job may have up to four payments advanced as a no-interest lien.",
   },
 ];
 
 const STEPS = [
   {
-    n: "01",
     title: "Tell us where you stand",
-    body: "The form below, or a call. Land or no land, roughly what you can put down, whether you have owned before. Two minutes, and no credit pull to ask.",
+    body: "The form, or a call. Land or no land, whether you've owned before. Two minutes, no credit pull.",
   },
   {
-    n: "02",
     title: "Talk to a MaineHousing lender",
-    body: "MaineHousing loans are made through participating lenders. We put you in front of one who knows how our homes are financed, and they confirm which programs you qualify for.",
+    body: "MaineHousing loans go through participating lenders. We connect you with one who knows how our homes are financed.",
   },
   {
-    n: "03",
     title: "Take the class, pick the home",
-    body: "Book the homebuyer education class early — Advantage and First Generation both need it before closing. With a pre-approval in hand, choose the home that fits under the limit.",
+    body: "Book the homebuyer class early — Advantage and First Generation both need it. Then choose a home under the limit.",
   },
 ];
+
+function CallButton({ dark = false, className = "" }: { dark?: boolean; className?: string }) {
+  return (
+    <a
+      href={site.phoneHref}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg border-2 px-5 py-3 font-bold transition-colors ${
+        dark
+          ? "border-[#10241c] text-[#10241c] hover:bg-[#10241c] hover:text-[#f5f0e4]"
+          : "border-white/40 text-white hover:border-white hover:bg-white/10"
+      } ${className}`}
+    >
+      <Icon.Phone className="size-4" />
+      {site.phone}
+    </a>
+  );
+}
+
+function CtaButton({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <a
+      href="#check"
+      className={`group inline-flex items-center justify-center gap-2 rounded-lg bg-[#f6c445] px-6 py-3.5 font-extrabold uppercase tracking-wide text-[#10241c] shadow-[0_4px_0_#c99a1e] transition-transform hover:-translate-y-0.5 ${className}`}
+    >
+      {children}
+      <Icon.Arrow className="size-4 transition-transform group-hover:translate-x-1" />
+    </a>
+  );
+}
 
 export default function MaineHousingFinancingPage() {
   const lender = company.preferredLender;
   const writesMaineHousing = lender?.loanPrograms?.some((p) => /mainehousing/i.test(p.name));
 
   return (
-    <>
-      <PageHero
-        photoKey="page/financing"
-        index="01"
-        eyebrow="MaineHousing financing"
-        size="tall"
-        title={
-          <>
-            Up to $10,000 toward closing
-            <br />
-            on a new home in Maine.
-          </>
-        }
-        lede="MaineHousing — the state's housing finance agency — offers low fixed-rate mortgages and down payment help that can be used on a manufactured home, on owned land or a leased lot. Most Maine households fall inside its income limits."
-        kind="exterior"
-      >
-        <div className="mt-10 flex flex-wrap gap-3">
-          <ButtonLink href="#form" className="!px-7 !py-4 !text-base">
-            See what I qualify for
-            <Icon.Arrow className="size-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
-          </ButtonLink>
+    <div
+      className="bg-[#f5f0e4] pb-20 text-[#10241c] antialiased md:pb-0"
+      style={{ fontFamily: "var(--font-grotesk), ui-sans-serif, system-ui, sans-serif", colorScheme: "light" }}
+    >
+      {/* ---- Top bar: the mark and a phone number, nothing else ---------- */}
+      <header className="bg-[#0e3b2c]">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          <span className="rounded-lg bg-white px-2.5 py-1">
+            <Image src={logo} alt={`${site.name} — Mobiles · Modulars`} priority sizes="180px" className="h-10 w-auto sm:h-12" />
+          </span>
           <a
             href={site.phoneHref}
-            className="inline-flex items-center gap-2 rounded-full border border-white/40 px-7 py-4 text-base font-medium text-white transition-colors hover:border-white hover:bg-white/10"
+            className="inline-flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-white/20"
           >
-            <Icon.Phone className="size-4" />
-            {site.phone}
+            <Icon.Phone className="size-4 text-[#f6c445]" />
+            <span className="hidden sm:inline">Call</span> {site.phone}
           </a>
         </div>
-        <ul className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-white/75">
-          {["$5,000 Advantage assistance", "$10,000 for first-generation buyers", "0.50% off for veterans"].map(
-            (t) => (
-              <li key={t} className="flex items-center gap-2">
-                <Icon.Check className="size-4 text-white" />
-                {t}
-              </li>
-            ),
-          )}
-        </ul>
-      </PageHero>
+      </header>
 
-      {/* The programs */}
-      <Section>
-        <Reveal>
-          <SectionHeading
-            index="02"
-            eyebrow="The programs"
-            title="One loan, and the help that stacks on it."
-            lede="Every program here rides on MaineHousing's First Home Loan. You pick one form of assistance — Advantage or First Generation — and a veteran can add the SaluteME discount."
-          />
-        </Reveal>
+      {/* ---- Hero, with the form above the fold on desktop -------------- */}
+      <section className="relative overflow-hidden bg-[#0e3b2c] text-white">
+        {/* A topographic ripple — Maine's ridgelines, not a photograph of somebody else's house. */}
+        <svg
+          aria-hidden
+          className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.07]"
+          preserveAspectRatio="none"
+          viewBox="0 0 1200 600"
+        >
+          {Array.from({ length: 14 }, (_, i) => (
+            <path
+              key={i}
+              d={`M0 ${120 + i * 36} C 200 ${60 + i * 36}, 380 ${200 + i * 36}, 600 ${110 + i * 36} S 1000 ${40 + i * 36}, 1200 ${150 + i * 36}`}
+              fill="none"
+              stroke="#fff"
+              strokeWidth="1.5"
+            />
+          ))}
+        </svg>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-2">
-          {PROGRAMS.map((p, i) => (
-            <Reveal key={p.name} delay={i * 80}>
-              <div className="flex h-full flex-col rounded-card border border-line bg-surface p-7 sm:p-8">
-                <div className="flex items-start justify-between gap-4">
-                  <h3 className="font-display text-2xl tracking-tight text-ink">{p.name}</h3>
-                  <Badge tone={p.tone}>{p.badge}</Badge>
-                </div>
-                <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-y border-line py-4">
-                  <span className="font-display text-4xl tracking-tight text-ink">{p.figure}</span>
-                  <span className="text-sm text-muted">{p.figureNote}</span>
-                </div>
-                <p className="mt-5 leading-relaxed text-muted">{p.body}</p>
-                <ul className="mt-6 flex-1 space-y-2.5">
-                  {p.rules.map((r) => (
-                    <li key={r} className="flex gap-2.5 text-[0.9rem] leading-relaxed text-ink-soft">
-                      <Icon.Check className="mt-0.5 size-4 shrink-0 text-ember" />
-                      {r}
-                    </li>
-                  ))}
-                </ul>
-                <a
-                  href={p.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-7 inline-flex items-center gap-1.5 text-sm font-medium text-ink underline underline-offset-4 hover:text-ember"
-                >
-                  Full rules at mainehousing.org
-                  <Icon.External className="size-3.5" />
-                </a>
+        <div className="relative mx-auto grid max-w-6xl gap-10 px-4 pb-16 pt-10 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14 lg:pb-24 lg:pt-16">
+          <div>
+            <p className="inline-flex items-center gap-2 rounded-full bg-[#f6c445] px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-[0.14em] text-[#10241c]">
+              <Icon.Star className="size-3.5" />
+              MaineHousing programs · {CHECKED}
+            </p>
+            <h1 className="mt-6 text-[2.6rem] font-black leading-[1.02] tracking-[-0.03em] sm:text-6xl lg:text-[4.25rem]">
+              Up to <span className="text-[#f6c445]">$10,000</span> toward closing on a new home in Maine.
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/80">
+              MaineHousing — the state&apos;s housing finance agency — offers low fixed-rate mortgages and
+              down payment help that work on a manufactured home, on land you own or a leased lot. Most
+              Maine households fall inside its income limits.
+            </p>
+
+            <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+              {[
+                "$5,000 Advantage assistance",
+                "$10,000 for first-generation buyers",
+                "0.50% off the rate for veterans",
+                "Credit scores from 640",
+              ].map((t) => (
+                <li key={t} className="flex items-center gap-3 font-semibold">
+                  <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[#f6c445] text-[#10241c]">
+                    <Icon.Check className="size-3.5" />
+                  </span>
+                  {t}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-10 flex flex-wrap gap-3 lg:hidden">
+              <CtaButton>See what I qualify for</CtaButton>
+              <CallButton />
+            </div>
+          </div>
+
+          {/* The form card */}
+          <div id="check" className="scroll-mt-6">
+            <div className="rounded-2xl bg-[#f5f0e4] p-6 text-[#10241c] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.5)] ring-4 ring-[#f6c445] sm:p-8">
+              <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#165440]">
+                Free 2-minute check
+              </p>
+              <h2 className="mt-2 text-2xl font-black leading-tight tracking-tight sm:text-[1.7rem]">
+                Which MaineHousing programs can you get?
+              </h2>
+              <div className="mt-6">
+                <MaineHousingForm />
               </div>
-            </Reveal>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---- The numbers, big ------------------------------------------- */}
+      <section className="border-b-4 border-[#10241c] bg-[#f6c445]">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px bg-[#10241c]/15 md:grid-cols-4">
+          {[
+            ["$10,000", "First Generation assistance"],
+            ["$5,000", "Advantage assistance"],
+            ["0.50%", "off for veterans"],
+            ["640", "minimum credit score"],
+          ].map(([n, l]) => (
+            <div key={l} className="bg-[#f6c445] px-4 py-7 text-center sm:py-9">
+              <div className="text-3xl font-black tracking-tight sm:text-5xl">{n}</div>
+              <div className="mt-1.5 text-xs font-bold uppercase tracking-[0.12em] text-[#10241c]/70 sm:text-sm">
+                {l}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ---- The programs ----------------------------------------------- */}
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+        <div className="max-w-2xl">
+          <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#165440]">The programs</p>
+          <h2 className="mt-3 text-4xl font-black leading-[1.05] tracking-[-0.025em] sm:text-5xl">
+            One loan. The help stacks on top.
+          </h2>
+          <p className="mt-5 text-lg leading-relaxed text-[#4b5a52]">
+            Everything rides on MaineHousing&apos;s First Home Loan. You pick one form of assistance —
+            Advantage or First Generation — and a veteran can add the SaluteME discount.
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-5 md:grid-cols-2">
+          {PROGRAMS.map((p) => (
+            <article
+              key={p.name}
+              className={`relative flex flex-col rounded-2xl border-2 p-6 sm:p-8 ${
+                p.star ? "border-[#0e3b2c] bg-[#0e3b2c] text-white" : "border-[#d9d2c1] bg-white"
+              }`}
+            >
+              {p.star && (
+                <span className="absolute -top-3 right-6 rounded-full bg-[#f6c445] px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.12em] text-[#10241c]">
+                  Biggest help
+                </span>
+              )}
+              <p
+                className={`text-xs font-bold uppercase tracking-[0.12em] ${p.star ? "text-[#f6c445]" : "text-[#165440]"}`}
+              >
+                {p.who}
+              </p>
+              <h3 className="mt-2 text-2xl font-black tracking-tight">{p.name}</h3>
+              <div className={`mt-4 flex flex-wrap items-baseline gap-x-3 border-y py-4 ${p.star ? "border-white/15" : "border-[#d9d2c1]"}`}>
+                <span className={`text-5xl font-black tracking-tight ${p.star ? "text-[#f6c445]" : ""}`}>{p.figure}</span>
+                <span className={`text-sm font-medium ${p.star ? "text-white/70" : "text-[#4b5a52]"}`}>{p.figureNote}</span>
+              </div>
+              <p className={`mt-4 leading-relaxed ${p.star ? "text-white/80" : "text-[#4b5a52]"}`}>{p.body}</p>
+              <ul className="mt-5 flex-1 space-y-2">
+                {p.rules.map((r) => (
+                  <li key={r} className="flex gap-2.5 text-[0.9rem] leading-relaxed">
+                    <Icon.Check className={`mt-1 size-4 shrink-0 ${p.star ? "text-[#f6c445]" : "text-[#165440]"}`} />
+                    <span className={p.star ? "text-white/90" : ""}>{r}</span>
+                  </li>
+                ))}
+              </ul>
+              <a
+                href={p.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`mt-6 inline-flex items-center gap-1.5 text-sm font-bold underline underline-offset-4 ${
+                  p.star ? "text-white hover:text-[#f6c445]" : "text-[#0e3b2c] hover:text-[#165440]"
+                }`}
+              >
+                Full rules at mainehousing.org
+                <Icon.External className="size-3.5" />
+              </a>
+            </article>
           ))}
         </div>
 
-        <Reveal className="mt-8">
-          <div className="flex gap-4 rounded-card border border-dashed border-line-strong p-6 sm:p-7">
-            <Icon.Info className="mt-0.5 size-5 shrink-0 text-ember" />
-            <p className="leading-relaxed text-muted">
-              <span className="font-semibold text-ink">Replacing a pre-1976 mobile home?</span>{" "}
-              MaineHousing&apos;s Mobile Home Replacement Initiative has paired a $35,000 grant
-              with a loan to remove an old home and set a new ENERGY STAR home on the same
-              site. Applications are closed — all 2026 funding is committed — but if that is
-              you, tell us in the form and we will keep an eye on it with you.
-            </p>
-          </div>
-        </Reveal>
-      </Section>
+        <div className="mt-6 flex gap-4 rounded-2xl border-2 border-dashed border-[#b9b09a] p-6">
+          <Icon.Info className="mt-0.5 size-5 shrink-0 text-[#165440]" />
+          <p className="leading-relaxed text-[#4b5a52]">
+            <span className="font-bold text-[#10241c]">Replacing a pre-1976 mobile home?</span>{" "}
+            MaineHousing&apos;s Mobile Home Replacement Initiative has paired a $35,000 grant with a loan to
+            remove an old home and set a new ENERGY STAR home on the same site. Applications are closed —
+            all 2026 funding is committed — but pick &ldquo;Replacing an old mobile home&rdquo; in the form
+            and we&apos;ll keep an eye on it with you.
+          </p>
+        </div>
 
-      {/* Manufactured-home rules */}
-      <section className="border-y border-line bg-surface">
-        <Container className="py-20 sm:py-28">
-          <Reveal>
-            <SectionHeading
-              index="03"
-              eyebrow="For a manufactured home"
-              title="What MaineHousing asks of the home."
-              lede="Manufactured homes have their own limits inside the programs. These are the ones that decide which home and which land will work."
-            />
-          </Reveal>
-          <div className="mt-14 grid gap-x-12 gap-y-10 md:grid-cols-2">
-            {MANUFACTURED.map((m, i) => (
-              <Reveal key={m.title} delay={i * 80}>
-                <div className="flex gap-5">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-surface-2 text-ember">
-                    <m.icon className="size-5" />
-                  </span>
-                  <div>
-                    <h3 className="font-display text-xl tracking-tight text-ink">{m.title}</h3>
-                    <p className="mt-2.5 leading-relaxed text-muted">{m.body}</p>
-                  </div>
-                </div>
-              </Reveal>
+        <div className="mt-10 flex flex-wrap items-center gap-3">
+          <CtaButton>Check which ones I get</CtaButton>
+          <CallButton dark />
+        </div>
+      </section>
+
+      {/* ---- Manufactured-home rules ------------------------------------ */}
+      <section className="bg-[#0e3b2c] text-white">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+          <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#f6c445]">For a manufactured home</p>
+          <h2 className="mt-3 max-w-2xl text-4xl font-black leading-[1.05] tracking-[-0.025em] sm:text-5xl">
+            What MaineHousing asks of the home.
+          </h2>
+          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {MANUFACTURED.map((m) => (
+              <div key={m.title} className="rounded-2xl bg-[#165440] p-6">
+                <span className="grid size-11 place-items-center rounded-lg bg-[#f6c445] text-[#10241c]">
+                  <m.icon className="size-5" />
+                </span>
+                <h3 className="mt-5 text-lg font-extrabold leading-snug tracking-tight">{m.title}</h3>
+                <p className="mt-2 text-[0.92rem] leading-relaxed text-white/75">{m.body}</p>
+              </div>
             ))}
           </div>
-        </Container>
-      </section>
-
-      {/* The lender — only when NERTO's lender lists MaineHousing. */}
-      {lender && writesMaineHousing && <PreferredLender index="04" lender={lender} />}
-
-      {/* Steps */}
-      <Section className={lender && writesMaineHousing ? "border-t border-line" : undefined}>
-        <Reveal>
-          <SectionHeading
-            index={lender && writesMaineHousing ? "05" : "04"}
-            eyebrow="How to start"
-            title="Three steps to a MaineHousing pre-approval."
-          />
-        </Reveal>
-        <div className="mt-12 grid gap-px overflow-hidden rounded-2xl bg-line sm:grid-cols-3">
-          {STEPS.map((s, i) => (
-            <Reveal key={s.n} delay={i * 90} className="bg-paper p-8">
-              <span className="font-mono text-sm text-ember">{s.n}</span>
-              <h3 className="mt-4 font-display text-xl tracking-tight text-ink">{s.title}</h3>
-              <p className="mt-3 leading-relaxed text-muted">{s.body}</p>
-            </Reveal>
-          ))}
         </div>
-      </Section>
-
-      {/* Form */}
-      <section id="form" className="scroll-mt-[calc(var(--chrome-h)+1.5rem)] border-t border-line bg-surface">
-        <Container className="py-20 sm:py-28">
-          <div className="grid gap-14 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
-            <Reveal>
-              <SectionHeading
-                index={lender && writesMaineHousing ? "06" : "05"}
-                eyebrow="See what you qualify for"
-                title="Find out which programs are open to you."
-                lede="Tell us a little about where you are. A person reads it and calls you back — usually the same day — with which MaineHousing programs look likely to fit, and what the next step is."
-              />
-              <p className="mt-8 text-sm leading-relaxed text-muted">
-                Rather talk now? Call{" "}
-                <a href={site.phoneHref} className="font-semibold text-ink underline underline-offset-4">
-                  {site.phone}
-                </a>
-                .
-              </p>
-            </Reveal>
-            <Reveal delay={140}>
-              <PreApprovalForm source="mainehousing-page" />
-            </Reveal>
-          </div>
-        </Container>
       </section>
 
-      {/* Fine print */}
-      <Container className="py-12">
-        <p className="max-w-4xl text-xs leading-relaxed text-muted">
-          {site.name} is not affiliated with, endorsed by or acting for MaineHousing (the
-          Maine State Housing Authority), and does not decide eligibility. Program amounts,
-          rates, income limits and purchase-price limits are MaineHousing&apos;s, as published
-          on{" "}
-          <a href={MH} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
-            mainehousing.org
-          </a>{" "}
-          in {CHECKED}, and may change or be withdrawn at any time. Income limits vary by
-          county and household size — see MaineHousing&apos;s{" "}
-          <a
-            href={`${MH}/charts/homebuyer-limits`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-2"
-          >
-            income and cost limits
-          </a>
-          . All loans are subject to credit approval by the lender. This page is not an offer
-          of credit.
-        </p>
-      </Container>
-    </>
+      {/* ---- Steps ------------------------------------------------------ */}
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+        <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#165440]">How to start</p>
+        <h2 className="mt-3 max-w-2xl text-4xl font-black leading-[1.05] tracking-[-0.025em] sm:text-5xl">
+          Three steps to a MaineHousing pre-approval.
+        </h2>
+        <ol className="mt-12 grid gap-5 md:grid-cols-3">
+          {STEPS.map((s, i) => (
+            <li key={s.title} className="relative rounded-2xl border-2 border-[#10241c] bg-white p-7 shadow-[6px_6px_0_#10241c]">
+              <span className="grid size-12 place-items-center rounded-full bg-[#f6c445] text-xl font-black">
+                {i + 1}
+              </span>
+              <h3 className="mt-5 text-xl font-extrabold tracking-tight">{s.title}</h3>
+              <p className="mt-2 leading-relaxed text-[#4b5a52]">{s.body}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* ---- The lender — only when NERTO's lender lists MaineHousing ---- */}
+      {lender && writesMaineHousing && (
+        <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 sm:pb-24">
+          <div className="grid items-center gap-8 rounded-2xl border-2 border-[#d9d2c1] bg-white p-6 sm:p-10 md:grid-cols-[auto_1fr]">
+            {lender.photo && (
+              <Image
+                src={lender.photo}
+                alt={`${lender.name}, ${lender.title}`}
+                width={160}
+                height={160}
+                className="size-28 rounded-full object-cover ring-4 ring-[#f6c445] sm:size-36"
+              />
+            )}
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#165440]">
+                The lender we work with
+              </p>
+              <h2 className="mt-2 text-3xl font-black tracking-tight">{lender.name}</h2>
+              <p className="mt-1 text-[#4b5a52]">
+                {lender.title}, {lender.company} · NMLS #{lender.nmls}
+                {lender.companyNmls && <> · Company NMLS #{lender.companyNmls}</>}
+              </p>
+              <p className="mt-4 max-w-2xl leading-relaxed text-[#4b5a52]">
+                Writes MaineHousing loans and knows how our homes are financed — home, land and site work.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                {lender.applyUrl && (
+                  <a
+                    href={lender.applyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#0e3b2c] px-5 py-3 font-bold text-white transition-colors hover:bg-[#165440]"
+                  >
+                    Apply with {lender.name.split(" ")[0]}
+                    <Icon.External className="size-4" />
+                  </a>
+                )}
+                {lender.phone && (
+                  <a
+                    href={tel(lender.phone)}
+                    className="inline-flex items-center gap-2 rounded-lg border-2 border-[#10241c] px-5 py-3 font-bold transition-colors hover:bg-[#10241c] hover:text-white"
+                  >
+                    <Icon.Phone className="size-4" />
+                    {lender.phone}
+                  </a>
+                )}
+              </div>
+              <p className="mt-5 text-xs leading-relaxed text-[#6b7469]">
+                {site.name} is not a lender and does not make credit decisions. You may use any lender you
+                choose.
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ---- Closing call ----------------------------------------------- */}
+      <section className="bg-[#f6c445]">
+        <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-4 py-14 sm:px-6 md:flex-row md:items-center md:justify-between">
+          <h2 className="max-w-xl text-3xl font-black leading-tight tracking-tight sm:text-4xl">
+            Find out what you qualify for — today.
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            <a
+              href="#check"
+              className="group inline-flex items-center gap-2 rounded-lg bg-[#10241c] px-6 py-3.5 font-extrabold uppercase tracking-wide text-white transition-transform hover:-translate-y-0.5"
+            >
+              Start my check
+              <Icon.Arrow className="size-4 transition-transform group-hover:translate-x-1" />
+            </a>
+            <CallButton dark />
+          </div>
+        </div>
+      </section>
+
+      {/* ---- Fine print and the legal links ----------------------------- */}
+      <footer className="bg-[#10241c] text-white/60">
+        <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <p className="max-w-4xl text-xs leading-relaxed">
+            {site.name} is not affiliated with, endorsed by or acting for MaineHousing (the Maine State
+            Housing Authority), and does not decide eligibility. Program amounts, rates, income limits and
+            purchase-price limits are MaineHousing&apos;s, as published on{" "}
+            <a href={MH} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-white">
+              mainehousing.org
+            </a>{" "}
+            in {CHECKED}, and may change or be withdrawn at any time. Income limits vary by county and
+            household size — see MaineHousing&apos;s{" "}
+            <a
+              href={`${MH}/charts/homebuyer-limits`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-white"
+            >
+              income and cost limits
+            </a>
+            . All loans are subject to credit approval by the lender. This page is not an offer of credit.
+          </p>
+          <div className="mt-6 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs sm:flex-row sm:items-center sm:justify-between">
+            <span>
+              © {new Date().getFullYear()} {site.name} · {site.address.street}, {site.address.city},{" "}
+              {site.address.region} {site.address.postalCode}
+            </span>
+            <span className="flex gap-4">
+              <Link href="/privacy-policy" className="underline hover:text-white">
+                Privacy policy
+              </Link>
+              <Link href="/terms" className="underline hover:text-white">
+                Terms
+              </Link>
+            </span>
+          </div>
+        </div>
+      </footer>
+
+      {/* ---- Sticky phone bar, small screens only ----------------------- */}
+      <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 gap-2 border-t border-white/10 bg-[#0e3b2c] p-3 md:hidden">
+        <a
+          href={site.phoneHref}
+          className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-white/30 py-3 text-sm font-bold text-white"
+        >
+          <Icon.Phone className="size-4" />
+          Call now
+        </a>
+        <a
+          href="#check"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#f6c445] py-3 text-sm font-extrabold uppercase tracking-wide text-[#10241c]"
+        >
+          Check eligibility
+        </a>
+      </div>
+    </div>
   );
 }

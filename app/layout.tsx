@@ -5,6 +5,7 @@ import { CALL_BAR_HEIGHT } from "@/components/call-bar";
 import { ChatWidget } from "@/components/chat-widget";
 import { EventNudge } from "@/components/event-nudge";
 import { FloatingCall } from "@/components/floating-call";
+import { SiteChrome } from "@/components/site-chrome";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { SavedHomesProvider } from "@/components/saved-homes";
@@ -160,23 +161,29 @@ export default function RootLayout({
           {GOOGLE_ADS_BOOT}
         </Script>
         <SavedHomesProvider>
-          <SiteHeader />
+          <SiteChrome>
+            <SiteHeader />
+          </SiteChrome>
           <main id="main" className="flex-1">
             {children}
           </main>
-          <SiteFooter />
-          {currentEvents().length > 0 && <EventNudge />}
-          {floatingCall && <FloatingCall />}
-          {embed ? (
-            <Script
-              id="ghl-chat-widget"
-              src={embed.src}
-              strategy="lazyOnload"
-              {...embed.attributes}
-            />
-          ) : (
-            chatWidget && <ChatWidget />
-          )}
+          {/* Everything below is chrome too, and is left off the bare landing
+              routes in `lib/page-config.ts`. */}
+          <SiteChrome>
+            <SiteFooter />
+            {currentEvents().length > 0 && <EventNudge />}
+            {floatingCall && <FloatingCall />}
+            {embed ? (
+              <Script
+                id="ghl-chat-widget"
+                src={embed.src}
+                strategy="lazyOnload"
+                {...embed.attributes}
+              />
+            ) : (
+              chatWidget && <ChatWidget />
+            )}
+          </SiteChrome>
         </SavedHomesProvider>
       </body>
     </html>
