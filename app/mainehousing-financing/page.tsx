@@ -6,6 +6,7 @@ import { Icon } from "@/components/ui";
 import { company } from "@/lib/company";
 import { site } from "@/lib/site";
 import logo from "@/public/logo.png";
+import mhLogo from "@/public/photos/partners/mainehousing-logo-reverse.png";
 
 /**
  * `/mainehousing-financing` — a campaign landing page for MaineHousing's
@@ -23,6 +24,12 @@ import logo from "@/public/logo.png";
  * colours rather than the skin's tokens, so it looks the same whichever skin
  * is active and whether or not the visitor has the dark theme on. Change the
  * colours here, not in `lib/skin.ts`.
+ *
+ * MaineHousing's logo (`public/photos/partners/mainehousing-logo-reverse.png`,
+ * their white "reverse" mark, taken from mainehousing.org) is used with
+ * MaineHousing's permission, given to NERTO in November 2026. It is white,
+ * so it only goes on the spruce ground. Do not reuse it elsewhere on the site
+ * without checking that the permission covers it.
  *
  * Every figure below is MaineHousing's, read from mainehousing.org in
  * November 2026, and each card links to the page it came from. MaineHousing
@@ -197,9 +204,19 @@ export default function MaineHousingFinancingPage() {
       {/* ---- Top bar: the mark and a phone number, nothing else ---------- */}
       <header className="bg-[#0e3b2c]">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <span className="rounded-lg bg-white px-2.5 py-1">
-            <Image src={logo} alt={`${site.name} — Mobiles · Modulars`} priority sizes="180px" className="h-10 w-auto sm:h-12" />
-          </span>
+          <div className="flex items-center gap-4 sm:gap-5">
+            <span className="rounded-lg bg-white px-2.5 py-1">
+              <Image src={logo} alt={`${site.name} — Mobiles · Modulars`} priority sizes="180px" className="h-10 w-auto sm:h-12" />
+            </span>
+            <span aria-hidden className="hidden h-10 w-px bg-white/25 sm:block" />
+            <Image
+              src={mhLogo}
+              alt="MaineHousing — Maine State Housing Authority"
+              priority
+              sizes="240px"
+              className="hidden h-9 w-auto sm:block"
+            />
+          </div>
           <a
             href={site.phoneHref}
             className="inline-flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-white/20"
@@ -232,9 +249,17 @@ export default function MaineHousingFinancingPage() {
 
         <div className="relative mx-auto grid max-w-6xl gap-10 px-4 pb-16 pt-10 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14 lg:pb-24 lg:pt-16">
           <div>
+            {/* On phones the top bar has no room for the second mark, so it leads the hero instead. */}
+            <Image
+              src={mhLogo}
+              alt="MaineHousing — Maine State Housing Authority"
+              priority
+              sizes="220px"
+              className="mb-6 h-9 w-auto sm:hidden"
+            />
             <p className="inline-flex items-center gap-2 rounded-full bg-[#f6c445] px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-[0.14em] text-[#10241c]">
               <Icon.Star className="size-3.5" />
-              MaineHousing programs · {CHECKED}
+              MaineHousing programs<span className="hidden sm:inline"> · {CHECKED}</span>
             </p>
             <h1 className="mt-6 text-[2.6rem] font-black leading-[1.02] tracking-[-0.03em] sm:text-6xl lg:text-[4.25rem]">
               Up to <span className="text-[#f6c445]">$10,000</span> toward closing on a new home in Maine.
@@ -383,7 +408,15 @@ export default function MaineHousingFinancingPage() {
       {/* ---- Manufactured-home rules ------------------------------------ */}
       <section className="bg-[#0e3b2c] text-white">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
-          <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#f6c445]">For a manufactured home</p>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#f6c445]">For a manufactured home</p>
+            <Image
+              src={mhLogo}
+              alt="MaineHousing — Maine State Housing Authority"
+              sizes="200px"
+              className="h-8 w-auto opacity-90"
+            />
+          </div>
           <h2 className="mt-3 max-w-2xl text-4xl font-black leading-[1.05] tracking-[-0.025em] sm:text-5xl">
             What MaineHousing asks of the home.
           </h2>
