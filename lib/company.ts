@@ -205,7 +205,7 @@ export const company: Company = {
   team: [
     {
       name: "Jeremy Turner",
-      role: "Co-owner · President, NERTO Homes · Vice President, Asset Development, Inc.",
+      role: "Co-owner · President, NERTO Homes",
       since: "2011",
       body: [
         "Jeremy Turner is the co-owner and co-founder of NERTO Homes, established in 2011 with a simple goal: to provide Maine families with an affordable, high-quality path to homeownership. Before NERTO Homes, Jeremy spent his career in the construction industry, gaining the hands-on experience and knowledge that continue to shape the way NERTO Homes operates today.",
