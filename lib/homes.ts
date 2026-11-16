@@ -197,6 +197,7 @@ const tours: Record<string, string> = {
      it. This is also the one home here that is standing on the lot. */
   "netr-g-3157": "https://my.matterport.com/models/p7X7JuDjFBf",
   "gh-210": "https://my.matterport.com/models/yUcaXGHWjbx",
+  "netr-g-3162": "https://my.matterport.com/models/x65XaJZTA83",
 };
 
 /**
