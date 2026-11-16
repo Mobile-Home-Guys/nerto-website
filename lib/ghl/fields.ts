@@ -78,6 +78,7 @@ export const CONTACT_FIELDS: GhlFieldDef[] = [
       { value: "landing-quote", label: "Hero quote card" },
       { value: "landing-contact", label: "Closing enquiry band" },
       { value: "prequalify-page", label: "Pre-approval page" },
+      { value: "mainehousing-page", label: "MaineHousing financing page" },
       { value: "land-deals-map", label: "Land map pre-approval" },
       { value: "walkthrough-request", label: "Walkthrough request" },
       { value: "chat-widget", label: "Chat widget" },

@@ -15,6 +15,7 @@ export const LEAD_SOURCES = [
   "landing-quote",
   "landing-contact",
   "prequalify-page",
+  "mainehousing-page",
 ] as const;
 
 export type LeadSource = (typeof LEAD_SOURCES)[number];
