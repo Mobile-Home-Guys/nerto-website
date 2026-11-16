@@ -210,3 +210,17 @@ export const chatWidget = true;
  * `components/call-bar.tsx`.
  */
 export const callBar = true;
+
+/**
+ * Routes that render with none of the site's chrome — no call bar, header,
+ * footer, floating call button, chat bubble or event nudge. These are ad
+ * landing pages: one offer, one form, and no navigation to wander off into.
+ * The page itself carries its own phone number and legal links.
+ *
+ * A route listed here should also stay out of `lib/navigation.ts` and the
+ * sitemap — nothing on the site should lead to a page that has no way back.
+ */
+export const bareRoutes = ["/mainehousing-financing"];
+
+export const isBareRoute = (pathname: string) =>
+  bareRoutes.some((r) => pathname === r || pathname.startsWith(`${r}/`));
