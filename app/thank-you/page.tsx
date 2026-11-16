@@ -30,6 +30,10 @@ const COPY: Record<string, { title: string; body: string }> = {
     title: "Got it — we'll call you.",
     body: "We'll call you with a pre-approval range, usually the same day.",
   },
+  "mainehousing-page": {
+    title: "Got it — we'll call you.",
+    body: "We'll call you about the MaineHousing programs you look likely to qualify for, usually the same day.",
+  },
   "land-deals-map": {
     title: "Got it — we'll call you.",
     body: "We'll call you with a pre-approval range, usually the same day.",
