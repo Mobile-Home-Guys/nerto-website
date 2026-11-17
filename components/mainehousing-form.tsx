@@ -12,19 +12,16 @@ import { LeadContext } from "./lead-context";
  *
  * It posts to the same Server Action as every pre-approval form
  * (`app/land-deals/actions.ts`, source `mainehousing-page`), but is styled
- * on the landing page's own palette rather than the site's tokens, and asks
- * the one question that decides which MaineHousing program fits. That answer
- * has no CRM field of its own, so it travels at the head of `notes`.
+ * on the landing page's own palette rather than the site's tokens.
+ *
+ * It deliberately does NOT ask which program the visitor fits. An earlier
+ * version offered "which sounds most like you?" chips (first generation,
+ * veteran, "I own a home now", replacing an old mobile home…). MaineHousing
+ * asked about them in November 2026 — the replacement program's funding is
+ * limited and may not exist for 2027, and current owners are mostly outside
+ * these programs — so eligibility is left to MaineHousing's own pages and a
+ * participating lender. Don't add a qualifying question back here.
  */
-
-const BUYER = [
-  { value: "first-generation", label: "My parents never owned their home" },
-  { value: "first-time", label: "I haven't owned a home in 3+ years" },
-  { value: "veteran", label: "I'm a veteran or service member" },
-  { value: "owner", label: "I own a home now" },
-  { value: "replacing", label: "Replacing an old mobile home" },
-  { value: "unsure", label: "Not sure" },
-] as const;
 
 const field =
   "mt-2 w-full rounded-lg border-2 border-[#d9d2c1] bg-white px-4 py-3 text-[0.95rem] text-[#10241c] placeholder:text-[#8a8577] transition-colors focus:border-[#0e3b2c] focus:outline-none";
@@ -34,7 +31,6 @@ export function MaineHousingForm() {
   const [state, action, pending] = useActionState(requestPreApproval, EMPTY_LEAD_STATE);
   const err = state.fieldErrors ?? {};
   const was = state.values ?? {};
-  const [buyer, setBuyer] = useState<string>("");
   const [extra, setExtra] = useState("");
 
   if (state.status === "ok") {
@@ -54,8 +50,7 @@ export function MaineHousingForm() {
     );
   }
 
-  const chosen = BUYER.find((b) => b.value === buyer);
-  const notes = [chosen && `Buyer: ${chosen.label}.`, extra.trim()].filter(Boolean).join(" ");
+  const notes = extra.trim();
 
   return (
     <form action={action} className="grid gap-4">
@@ -71,28 +66,6 @@ export function MaineHousingForm() {
         className="hidden"
       />
       <LeadContext />
-
-      <fieldset>
-        <legend className={label}>Which sounds most like you?</legend>
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          {BUYER.map((b) => (
-            <button
-              key={b.value}
-              type="button"
-              aria-pressed={buyer === b.value}
-              onClick={() => setBuyer(buyer === b.value ? "" : b.value)}
-              className={cx(
-                "rounded-lg border-2 px-3 py-2.5 text-left text-[0.82rem] font-semibold leading-snug transition-colors",
-                buyer === b.value
-                  ? "border-[#0e3b2c] bg-[#0e3b2c] text-white"
-                  : "border-[#d9d2c1] bg-white text-[#10241c] hover:border-[#0e3b2c]",
-              )}
-            >
-              {b.label}
-            </button>
-          ))}
-        </div>
-      </fieldset>
 
       <label className="block">
         <span className={label}>Your name</span>
@@ -175,7 +148,7 @@ export function MaineHousingForm() {
         disabled={pending}
         className="group mt-1 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#f6c445] px-6 py-4 text-base font-extrabold uppercase tracking-wide text-[#10241c] shadow-[0_4px_0_#c99a1e] transition-transform hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-60"
       >
-        {pending ? "Sending…" : "Check my programs"}
+        {pending ? "Sending…" : "Send"}
         {!pending && <Icon.Arrow className="size-4 transition-transform group-hover:translate-x-1" />}
       </button>
       <p className="text-center text-xs leading-relaxed text-[#6b7469]">
