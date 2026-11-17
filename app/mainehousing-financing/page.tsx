@@ -6,6 +6,7 @@ import { Icon } from "@/components/ui";
 import { company } from "@/lib/company";
 import { site } from "@/lib/site";
 import logo from "@/public/logo.png";
+import mhLogo from "@/public/mainehousing-logo.png";
 
 /**
  * `/mainehousing-financing` — a campaign landing page for MaineHousing's
@@ -30,6 +31,15 @@ import logo from "@/public/logo.png";
  * $5,000 — so re-read those pages before reusing this for a new campaign,
  * and update `CHECKED` when you do. NERTO is not MaineHousing and does not
  * decide eligibility; the fine print says so, and it must stay.
+ *
+ * REVIEWED BY MAINEHOUSING, November 2026. Their marketing team supplied
+ * the logo in `public/mainehousing-logo.png` (white, for a dark ground) and
+ * asked that it be used. They also asked that the "free 2-minute check" —
+ * a "which sounds most like you?" qualifier — come out: the hero card now
+ * carries their own description of three programs, in their words, each
+ * linking to its page. The Mobile Home Replacement callout was removed at
+ * the same time, as that program's funding is limited and may not exist in
+ * 2027. Don't put either back without asking MaineHousing.
  */
 
 const CHECKED = "November 2026";
@@ -52,6 +62,31 @@ export const metadata: Metadata = {
      signal  #f6c445   the one accent — CTAs and the big figures
      ink     #10241c   body text on cream
      moss    #4b5a52   secondary text on cream                        */
+
+/** MaineHousing's own description of each program, as they sent it. Theirs, verbatim — don't edit. */
+const MH_PROGRAMS = [
+  {
+    name: "First Home Loan Program",
+    body: "The First Home Loan Program provides low fixed rate mortgages to people who have not owned homes in the last three years. No point and low point options are available. Although income limits apply, most Maine households are income-eligible for the program. First Home Loan mortgages also offer payment protection for eligible borrowers who lose their jobs.",
+    href: `${MH}/programs-services/homebuyer/homebuyerdetail/first-home-loan-program`,
+    icon: Icon.House,
+    tone: "bg-[#0e3b2c] text-white",
+  },
+  {
+    name: "First Generation Program",
+    body: "The First Generation Program is a mortgage program for borrowers who have never lived in a home owned by their biological parents or legal guardians. The program is also available to borrowers who have been in foster care at some point in their childhood. This program makes it easier and more affordable to buy a home of your own by providing a low fixed interest rate mortgage, down payment and closing costs assistance, and education classes that offer valuable information to help you become a successful long-term homeowner.",
+    href: `${MH}/programs-services/homebuyer/homebuyerdetail/first-generation-program`,
+    icon: Icon.House,
+    tone: "bg-[#f6c445] text-[#10241c]",
+  },
+  {
+    name: "Salute ME & Salute Home Again",
+    body: "To show appreciation for the commitment and sacrifices made by Maine’s veterans, MaineHousing offers qualified active duty and retired military personnel a 0.50% discount to the already low First Home Loan program’s 30-year fixed interest rate. Available to veterans who are first-time homebuyers or who previously owned a home (first-time homebuyer requirement is waived).",
+    href: `${MH}/programs-services/homebuyer/homebuyerdetail/saluteme-salute-home-again`,
+    icon: Icon.Shield,
+    tone: "bg-[#165440] text-white",
+  },
+];
 
 const tel = (phone: string) => `tel:+1${phone.replace(/\D/g, "")}`;
 
@@ -144,8 +179,8 @@ const MANUFACTURED = [
 
 const STEPS = [
   {
-    title: "Tell us where you stand",
-    body: "The form, or a call. Land or no land, whether you've owned before. Two minutes, no credit pull.",
+    title: "Read the program pages",
+    body: "Start with MaineHousing's own pages, linked above — they set who qualifies. Then call us or send the form; no credit pull.",
   },
   {
     title: "Talk to a MaineHousing lender",
@@ -176,7 +211,7 @@ function CallButton({ dark = false, className = "" }: { dark?: boolean; classNam
 function CtaButton({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <a
-      href="#check"
+      href="#contact"
       className={`group inline-flex items-center justify-center gap-2 rounded-lg bg-[#f6c445] px-6 py-3.5 font-extrabold uppercase tracking-wide text-[#10241c] shadow-[0_4px_0_#c99a1e] transition-transform hover:-translate-y-0.5 ${className}`}
     >
       {children}
@@ -232,6 +267,13 @@ export default function MaineHousingFinancingPage() {
 
         <div className="relative mx-auto grid max-w-6xl gap-10 px-4 pb-16 pt-10 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14 lg:pb-24 lg:pt-16">
           <div>
+            <Image
+              src={mhLogo}
+              alt="MaineHousing — Maine State Housing Authority"
+              priority
+              sizes="(min-width: 640px) 320px, 240px"
+              className="mb-7 h-9 w-auto sm:h-12"
+            />
             <p className="inline-flex items-center gap-2 rounded-full bg-[#f6c445] px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-[0.14em] text-[#10241c]">
               <Icon.Star className="size-3.5" />
               MaineHousing programs · {CHECKED}
@@ -262,24 +304,53 @@ export default function MaineHousingFinancingPage() {
             </ul>
 
             <div className="mt-10 flex flex-wrap gap-3 lg:hidden">
-              <CtaButton>See what I qualify for</CtaButton>
+              <CtaButton>Talk to us</CtaButton>
               <CallButton />
             </div>
           </div>
 
-          {/* The form card */}
-          <div id="check" className="scroll-mt-6">
-            <div className="rounded-2xl bg-[#f5f0e4] p-6 text-[#10241c] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.5)] ring-4 ring-[#f6c445] sm:p-8">
-              <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#165440]">
-                Free 2-minute check
-              </p>
-              <h2 className="mt-2 text-2xl font-black leading-tight tracking-tight sm:text-[1.7rem]">
-                Which MaineHousing programs can you get?
-              </h2>
-              <div className="mt-6">
-                <MaineHousingForm />
-              </div>
-            </div>
+          {/* MaineHousing's three programs, in their words, each linking out */}
+          <div className="rounded-2xl bg-[#f5f0e4] p-6 text-[#10241c] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.5)] ring-4 ring-[#f6c445] sm:p-8">
+            <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#165440]">
+              From MaineHousing
+            </p>
+            <h2 className="mt-2 text-2xl font-black leading-tight tracking-tight sm:text-[1.7rem]">
+              Homebuyer programs
+            </h2>
+            <ul className="mt-6 space-y-6">
+              {MH_PROGRAMS.map((p) => (
+                <li key={p.name} className="flex gap-4">
+                  <span className={`grid size-11 shrink-0 place-items-center rounded-full ${p.tone}`}>
+                    <p.icon className="size-5" />
+                  </span>
+                  <div>
+                    <h3 className="font-extrabold leading-snug">
+                      <a
+                        href={p.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline decoration-[#b9b09a] underline-offset-4 hover:text-[#165440] hover:decoration-[#165440]"
+                      >
+                        {p.name}
+                      </a>
+                    </h3>
+                    <p className="mt-1.5 text-[0.88rem] leading-relaxed text-[#4b5a52]">{p.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <a
+              href={MH_PROGRAMS[0].href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group mt-7 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#f6c445] px-6 py-4 text-base font-extrabold uppercase tracking-wide text-[#10241c] shadow-[0_4px_0_#c99a1e] transition-transform hover:-translate-y-0.5"
+            >
+              First Home Loan details
+              <Icon.External className="size-4" />
+            </a>
+            <p className="mt-3 text-center text-xs leading-relaxed text-[#6b7469]">
+              Opens mainehousing.org. MaineHousing and its participating lenders decide eligibility.
+            </p>
           </div>
         </div>
       </section>
@@ -363,19 +434,8 @@ export default function MaineHousingFinancingPage() {
           ))}
         </div>
 
-        <div className="mt-6 flex gap-4 rounded-2xl border-2 border-dashed border-[#b9b09a] p-6">
-          <Icon.Info className="mt-0.5 size-5 shrink-0 text-[#165440]" />
-          <p className="leading-relaxed text-[#4b5a52]">
-            <span className="font-bold text-[#10241c]">Replacing a pre-1976 mobile home?</span>{" "}
-            MaineHousing&apos;s Mobile Home Replacement Initiative has paired a $35,000 grant with a loan to
-            remove an old home and set a new ENERGY STAR home on the same site. Applications are closed —
-            all 2026 funding is committed — but pick &ldquo;Replacing an old mobile home&rdquo; in the form
-            and we&apos;ll keep an eye on it with you.
-          </p>
-        </div>
-
         <div className="mt-10 flex flex-wrap items-center gap-3">
-          <CtaButton>Check which ones I get</CtaButton>
+          <CtaButton>Talk to us about a home</CtaButton>
           <CallButton dark />
         </div>
       </section>
@@ -476,21 +536,23 @@ export default function MaineHousingFinancingPage() {
         </section>
       )}
 
-      {/* ---- Closing call ----------------------------------------------- */}
-      <section className="bg-[#f6c445]">
-        <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-4 py-14 sm:px-6 md:flex-row md:items-center md:justify-between">
-          <h2 className="max-w-xl text-3xl font-black leading-tight tracking-tight sm:text-4xl">
-            Find out what you qualify for — today.
-          </h2>
-          <div className="flex flex-wrap gap-3">
-            <a
-              href="#check"
-              className="group inline-flex items-center gap-2 rounded-lg bg-[#10241c] px-6 py-3.5 font-extrabold uppercase tracking-wide text-white transition-transform hover:-translate-y-0.5"
-            >
-              Start my check
-              <Icon.Arrow className="size-4 transition-transform group-hover:translate-x-1" />
-            </a>
-            <CallButton dark />
+      {/* ---- Contact: the form, with no qualifying questions -------------- */}
+      <section id="contact" className="scroll-mt-6 bg-[#f6c445]">
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+          <div>
+            <h2 className="max-w-xl text-3xl font-black leading-tight tracking-tight sm:text-4xl">
+              Questions about a new home and a MaineHousing loan?
+            </h2>
+            <p className="mt-5 max-w-lg text-lg leading-relaxed text-[#10241c]/80">
+              Send us your number and we&apos;ll call you back — about the homes, the land, and getting
+              you to a participating lender. No credit pull to ask.
+            </p>
+            <div className="mt-8">
+              <CallButton dark />
+            </div>
+          </div>
+          <div className="rounded-2xl bg-[#f5f0e4] p-6 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.35)] sm:p-8">
+            <MaineHousingForm />
           </div>
         </div>
       </section>
@@ -516,6 +578,7 @@ export default function MaineHousingFinancingPage() {
               income and cost limits
             </a>
             . All loans are subject to credit approval by the lender. This page is not an offer of credit.
+            The MaineHousing logo is used with MaineHousing&apos;s permission.
           </p>
           <div className="mt-6 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs sm:flex-row sm:items-center sm:justify-between">
             <span>
@@ -544,10 +607,10 @@ export default function MaineHousingFinancingPage() {
           Call now
         </a>
         <a
-          href="#check"
+          href="#contact"
           className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#f6c445] py-3 text-sm font-extrabold uppercase tracking-wide text-[#10241c]"
         >
-          Check eligibility
+          Send a message
         </a>
       </div>
     </div>
