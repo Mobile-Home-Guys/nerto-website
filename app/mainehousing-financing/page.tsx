@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { MaineHousingForm } from "@/components/mainehousing-form";
 import { Icon } from "@/components/ui";
 import { company } from "@/lib/company";
+import { pages } from "@/lib/page-config";
 import { site } from "@/lib/site";
 import logo from "@/public/logo.png";
 import mhLogo from "@/public/mainehousing-logo.png";
@@ -12,10 +14,10 @@ import mhLogo from "@/public/mainehousing-logo.png";
  * `/mainehousing-financing` — a campaign landing page for MaineHousing's
  * homebuyer programs, for ads and direct links only.
  *
- * UNLISTED ON PURPOSE. It is not in `lib/navigation.ts`, not in
- * `app/sitemap.ts`, and it asks search engines not to index it. The only way
- * in is a link somebody was given. Keep it that way: `/financing` is the page
- * the site itself points at.
+ * LINKED, NOT INDEXED. Since November 2026 it is a tab in the header
+ * (`lib/navigation.ts`, switched by `pages.maineHousing`), but it is still
+ * kept out of `app/sitemap.ts` and asks search engines not to index it.
+ * Because it is bare, its logo links back to `/`.
  *
  * BARE AND OFF-THEME ON PURPOSE. It is listed in `bareRoutes` in
  * `lib/page-config.ts`, so the site's header, footer, call bar, chat and
@@ -221,6 +223,7 @@ function CtaButton({ children, className = "" }: { children: React.ReactNode; cl
 }
 
 export default function MaineHousingFinancingPage() {
+  if (!pages.maineHousing) redirect("/");
   const lender = company.preferredLender;
   const writesMaineHousing = lender?.loanPrograms?.some((p) => /mainehousing/i.test(p.name));
 
@@ -232,9 +235,9 @@ export default function MaineHousingFinancingPage() {
       {/* ---- Top bar: the mark and a phone number, nothing else ---------- */}
       <header className="bg-[#0e3b2c]">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <span className="rounded-lg bg-white px-2.5 py-1">
+          <Link href="/" aria-label={`${site.name} home`} className="rounded-lg bg-white px-2.5 py-1">
             <Image src={logo} alt={`${site.name} — Mobiles · Modulars`} priority sizes="180px" className="h-10 w-auto sm:h-12" />
-          </span>
+          </Link>
           <a
             href={site.phoneHref}
             className="inline-flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-white/20"

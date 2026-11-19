@@ -119,7 +119,8 @@ export type OptionalPage =
   | "prequalify"
   | "buildAHome"
   | "address"
-  | "events";
+  | "events"
+  | "maineHousing";
 
 /**
  * Standalone routes. A `false` here makes the route redirect to `/` and drops
@@ -159,6 +160,9 @@ export const pages: Record<OptionalPage, boolean> = {
   buildAHome: true,
   address: true,
   events: true,
+  /* The MaineHousing ad landing page, linked from the header. Still noindex
+     and out of the sitemap; `false` takes it out of the nav and redirects it. */
+  maineHousing: true,
 };
 
 /**
@@ -217,8 +221,9 @@ export const callBar = true;
  * landing pages: one offer, one form, and no navigation to wander off into.
  * The page itself carries its own phone number and legal links.
  *
- * A route listed here should also stay out of `lib/navigation.ts` and the
- * sitemap — nothing on the site should lead to a page that has no way back.
+ * Keep these out of the sitemap. A route here that is linked from
+ * `lib/navigation.ts` must carry its own way back to `/` — the MaineHousing
+ * page does it with its logo.
  */
 export const bareRoutes = ["/mainehousing-financing"];
 

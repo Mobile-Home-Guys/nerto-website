@@ -89,7 +89,9 @@ export function SiteHeader() {
                         : "text-ink hover:bg-surface-2",
                     )}
                   >
-                    {Glyph && <Glyph className="size-4 shrink-0" />}
+                    {/* Icons only from xl: below it the five links and the phone button
+                        do not fit beside the logo. */}
+                    {Glyph && <Glyph className="hidden size-4 shrink-0 xl:block" />}
                     {item.label}
                   </Link>
                 );
