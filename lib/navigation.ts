@@ -36,13 +36,16 @@ export type NavItem = {
   icon?: NavIcon;
 };
 
-/* Five, and short ones. The bar is a single row beside a logo and a phone
+/* Five, and short ones — six are listed, but `land-deals` is switched off. The bar is a single row beside a logo and a phone
    button, and a sixth item is what makes it wrap on a 1280-wide laptop.
    Everything else lives in `SECONDARY` and reaches the drawer. */
 const PRIMARY: NavItem[] = [
   { href: "/listings", label: "Homes", page: "listings", icon: "House" },
   { href: "/land-deals", label: "Land", page: "landDeals", icon: "Pin" },
   { href: "/financing", label: "Financing", page: "financing", icon: "Dollar" },
+  /* The MaineHousing landing page. It is a bare route (see `bareRoutes`), so
+     the visitor leaves the header behind; its logo is the way back. */
+  { href: "/mainehousing-financing", label: "MaineHousing", page: "maineHousing", icon: "Shield" },
   { href: "/about", label: "About us", page: "about", icon: "Info" },
   { href: "/contact", label: "Contact us", page: "contact", icon: "Mail" },
 ];
