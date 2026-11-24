@@ -233,9 +233,9 @@ export const company: Company = {
     {
       name: "Jordan Cloutier",
       role: "Sales Manager",
-      since: "2025",
+      since: "2024",
       body: [
-        "Jordan joined NERTO Homes in January 2025, bringing more than 10 years of business development experience and a strong focus on customer relationships. As Sales Manager, he helps clients navigate the homebuying process, from choosing the right home and personalizing finishes to coordinating with lenders, realtors, and NERTO's project team.",
+        "Jordan joined NERTO Homes in January 2024, bringing more than 10 years of business development experience and a strong focus on customer relationships. As Sales Manager, he helps clients navigate the homebuying process, from choosing the right home and personalizing finishes to coordinating with lenders, realtors, and NERTO's project team.",
         "Whether clients already own land or are searching for the perfect homesite, Jordan helps bring the pieces together. He works closely with the people involved in each project to keep communication clear and help clients move confidently toward closing and getting their keys.",
         "Jordan also supports NERTO's marketing, community events, and professional partnerships. His approach is friendly, straightforward, and low pressure, with a commitment to helping every client feel informed, supported, and excited about their new home.",
       ],
